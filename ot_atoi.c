@@ -3,7 +3,7 @@
     can implement it correctly, so I'll take a try, and to see how
     much time and submit I needed to finish it.
  *DATE: 2013/09/28
- *Modify:
+ *Modify: - Read input from file, one line one string
  *
 ===================================================================*/
 #include <stdio.h>
@@ -60,6 +60,7 @@ a2i(const char* str)
             break;
         else if (IS_NUM(*(str+i))) {
            all_space=false;
+           has_sign=true;
            integer = integer * 10 ; 
            integer += (int)CHAR_TO_INT(*(str+i));
         }
@@ -67,7 +68,7 @@ a2i(const char* str)
             printf("Unexpect char!\n");
     }
     if (sign == '-')
-        return (~integer+1);
+        return (~integer+1); /* how can I forget it? */
     else
         return integer;
 }
@@ -75,12 +76,32 @@ a2i(const char* str)
 int
 main(void)
 {
+#if 0
     char str[MAX_NUM_LEN];
     printf("Please input the test number, support plus-minus integer:\n");
-    scanf("%s", str);
+//    scanf("%8s", str);
+    fgets(str, sizeof(str), stdin);
     printf("The number you want to show is: %d\n", a2i(str));
+#endif
+
+    static const char test_case[] = "ot_atoi.c.case";
+    FILE *file = fopen (test_case, "r");
+    if ( file != NULL ){
+        char line [128];
+        char limit_line [MAX_NUM_LEN];
+        while ( fgets( line, sizeof(line), file ) != NULL ) /* read a line */
+        {
+            printf("get input string: ");
+            fputs(line, stdout); /* write the line */
+            memcpy(limit_line, line, MAX_NUM_LEN);
+            printf("The number is: %d\n", a2i(limit_line));
+        }
+        fclose(file);
+    }
+    else
+    {
+        perror (test_case); /* why didn't the file open? */
+    }
 
     return 0;
 }
-
-
