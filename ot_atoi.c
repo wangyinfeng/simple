@@ -107,6 +107,13 @@ main(void)
 }
 
 /* Compare to the GNU implemetation, my code sucks!
+ * The main reason I think is because you are just an
+ * inexperienced C coder, although you declare yourself
+ * as a C master, but it's not true, admit it.
+ * Compare the two implemation, your code just like 
+ * someone read the C programming book at the first day in 
+ * college, don't use any advantage of the C.
+ * So, face to the realistic, think more and write more.
  */
 long __cdecl atol(
         const char *nptr
