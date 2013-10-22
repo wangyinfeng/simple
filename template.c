@@ -2,7 +2,7 @@
  * Description: 
  * DATE: 2013/10/17
  * Modify:
- *
+ * Conclusion:
 ===================================================================*/
 /* include */
 #include <stdio.h>
