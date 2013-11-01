@@ -9,8 +9,9 @@
  *		        Big endian:
  *		        12 34 56 78 address low->high
  * DATE: 2013/10/25
- * Modify: 2013/10/29
+ * Modify: 2013/11/01
  * Conclusion: More than one approach to get the result
+ *             Also able to check the endian by cast pointer
 ===================================================================*/
 /* include */
 #include <stdio.h>
@@ -88,6 +89,16 @@ main(int argc, char **argv)
     TEST test, result;
     int i;
     test.b = 0x12345678;
+
+    unsigned int *p = &test.b;
+    char *cp = (char *)p;
+    if (*cp == 0x12) {
+        printf("Big endian checked by pointer, data in low address 0x%x\n", *cp);
+    }
+    else {
+        printf("Little endian checked by pointer, data in low address 0x%x\n", *cp);
+    }
+
     if (test.c[0] == 0x12) {
         printf("Current machine is Big Endian\n");
         printf("In memory:\n");
