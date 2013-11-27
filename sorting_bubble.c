@@ -23,7 +23,10 @@
 #define true            1
 #define false           0
 
+#define SWAP(a, b)  (a^=b, b^=a, a^=b)
+
 int num[] = {2,4,12,34,3,56,23,67,90,1,66,43};
+int comp_count;
 
 void
 print_num(int n[], int size)
@@ -47,9 +50,30 @@ sort_A(int n[], int size)
                 n[i] = n[i+1];
                 n[i+1] = tmp;
             }
+            comp_count++;
         }
         size--;
     } while(size);
+}
+
+/* if no swap happened when traveral, means sort finished, quit
+ * avoid unncessary walk */
+void
+sort_B(int n[], int size)
+{
+    int ok = true;
+    int i;
+    while (ok) {
+        ok = false;
+        for (i=0; i<size-1; i++) {
+            if (n[i] > n[i+1]) {
+                SWAP(n[i], n[i+1]);
+                ok = true;
+            }
+            comp_count++;
+        }
+        size--;
+    }
 }
 
 int
@@ -62,10 +86,21 @@ main(int argc, char **argv)
 
     printf("Original sequence:\n");
     print_num(num, size);
-
-    sort_A(num, size);
-    printf("Sorted sequence:\n");
-    print_num(num, size);
+    
+    if (argc != 2)
+        return 0;
+    if (*argv[1] == 'A') {
+        sort_A(num, size);
+        printf("Sorted sequence:\n");
+        print_num(num, size);
+        printf("compare count %d\n", comp_count);
+    }
+    else if (*argv[1] == 'B') {
+        sort_B(num, size);
+        printf("Sorted sequence:\n");
+        print_num(num, size);
+        printf("compare count %d\n", comp_count);
+    }
 
     return 0;
 }
