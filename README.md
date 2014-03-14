@@ -1,4 +1,5 @@
-simple
-======
+simple practice
+=====
+Files begin with uucp_*.* are practice about Understanding and Using C Pointer.
+Files begin with ot_*.* are another implementation about C library.
 
-simple c code
