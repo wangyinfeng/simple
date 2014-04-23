@@ -1,6 +1,6 @@
 /*====================================================================
  * Description: 
- * DATE: 2014/03/12
+ * DATE: 2014/04/23
  * Modify:
  * Conclusion:
 ===================================================================*/
@@ -8,6 +8,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <time.h>
 
 /* Macro definition */
 #define false           0
