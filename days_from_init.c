@@ -1,8 +1,10 @@
 /*====================================================================
  * Description: count the days since my baby born
  * DATE: 2014/04/23
- * Modify:
+ * Modify: 
  * Conclusion: Is there any better way to calculate the days?
+ * - Count the seconds since epoch, do not need to care about
+ *   the leap year
  ===================================================================*/
 /* include */
 #include <stdio.h>
@@ -88,10 +90,18 @@ unsigned int days_count(void)
 unsigned int ot_days_count(void)
 {
     struct timeval tv;
+    struct tm init_date;
+    memset(&init_date, 0, sizeof(init_date));
+    /* the struct tm need to use carefully */
+    init_date.tm_year = 114; /* since 1900 */
+    init_date.tm_mon = 1; /* index begin from 0 */
+    init_date.tm_mday = 6;
+    time_t then = mktime(&init_date);
     gettimeofday(&tv, NULL);
     /* is there any similar calls to accept specified date parameter,
      * count the diff between epoch and the specified date? */
-    return tv.tv_sec/24/3600;
+    /* mktime() */
+    return (unsigned int)difftime(tv.tv_sec, then)/24/3600;
 }
 
 int
