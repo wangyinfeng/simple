@@ -8,6 +8,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <sys/time.h>
 #include <time.h>
 
 /* Macro definition */
@@ -23,21 +24,20 @@ char month_length[13] = {0,31,28,31,30,31,30,31,31,30,31,30,31};
 
 int is_leap_year(int year)
 {
-    if ((year%4 == 0) && (year%100!=0) || (year%400==0))
+    if (((year%4 == 0) && (year%100!=0)) || (year%400==0))
         return 1;
     else
         return 0;
 }
 
-int
-main(int argc, char** argv)
+unsigned int days_count(void)
 {
-    int this_year;
-    int this_month;
-    int this_day;
+    unsigned int this_year;
+    unsigned int this_month;
+    unsigned int this_day;
     time_t rawtime;
-    int day_from_init = 0;
-    int leap_add = 0;
+    unsigned int day_from_init = 0;
+    unsigned int leap_add = 0;
     int i;
 
     time(&rawtime); 
@@ -80,9 +80,28 @@ main(int argc, char** argv)
             leap_add--;
     }
     day_from_init += leap_add;
+    return day_from_init;
+}
 
-    if (day_from_init >= 0)
-        printf("The angel has come for %d days.\n", day_from_init);
+/* Since the script can count the days with the seconds from Epoch,
+ * C can also try */
+unsigned int ot_days_count(void)
+{
+    struct timeval tv;
+    gettimeofday(&tv, NULL);
+    /* is there any similar calls to accept specified date parameter,
+     * count the diff between epoch and the specified date? */
+    return tv.tv_sec/24/3600;
+}
+
+int
+main(int argc, char** argv)
+{
+    unsigned int days;
+//    days = days_count();
+    days = ot_days_count();
+    if (days > 0)
+        printf("The angel has come for %d days.\n", days);
 
     return 0;
 }
