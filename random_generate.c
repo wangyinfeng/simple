@@ -13,6 +13,10 @@
 #include <string.h>
 #include <stdlib.h>
 #include <time.h>
+#include <fcntl.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <unistd.h>
 
 /* Macro definition */
 #define false           0
@@ -26,48 +30,78 @@ int
 print_random_number(char *name)
 {
     FILE* fp = NULL;
-    size_t n;
-    ssize_t read;
-    char *line = NULL;
-    unsigned int num;
+    char line[32];
 
     fp = fopen(name, "r");
-    if (fp == -1) {
-        fprintf("Fail to open file %s\n");
+    if (fp == NULL) {
+        fprintf(stderr, "Fail to open file %s\n", name);
         exit(1);
     }
     else {
-        while((read = getline(&line, &n, fp)) != -1) {
-            printf("%s ", line);
+        while(fgets(line, sizeof(line), fp) != NULL) {
+            printf("%d ", atoi(line));
         }
-        if (line)
-            free(&line);
+        fclose(fp);
     }
     printf("\n");
+    return 0;
 }
+
+/* get from ../system/A_random.c */
+unsigned int
+get_random_number(unsigned int low_limit, unsigned int up_limit)
+{
+    char *random_byte;
+    unsigned int random;
+    static int random_fd = -1;
+    size_t size = sizeof(random);
+
+    /* just use open and read it as it is a file */
+    /* use /dev/random to generate random based on the input interval(key board or mouse)
+     * so it may blocked if there no input. */
+    random_fd = open("/dev/random", O_RDONLY);
+    if (random_fd == -1) {
+        /* /dev/urandom also generate random number, but not so 'random' as this one */
+        fprintf(stderr, "Open /dev/random failed\n");
+        return 0;
+    }
+    else {
+        random_byte = (char*)&random;
+        do {
+            int read_byte;
+            read_byte = read(random_fd, random_byte, size);
+            size -= read_byte;
+            random_byte += read_byte;
+        }
+        while(size >0);
+    }
+    random = low_limit + (random % (up_limit-low_limit+1));
+//    printf("Get random between %d-%d is %d\n", up_limit, low_limit, random);
+    return random;
+}
+
 
 int
 main(int argc, char **argv)
 {
     int fd = -1;
+    char *random_byte;
     unsigned int random, up_num;
-    int n;
+    size_t size = sizeof(random);
+    int i,n;
     char buf[32];
 
     if (argc < 2) {
         fprintf(stderr, "Please specified the up limit of the random number.\n");
         exit(1);
     }
-    up_num = argv[1];
+    up_num = atoi(argv[1]);
 
-    fd = open("/dev/random", O_RDONLY);
-    if (fd == -1) {
-        fprintf(stderr, "Open /dev/random fialed\n");
-        exit(1);
-    }
-    else {
-        n = read(fd, (char*)&random, sizeof(random));
-        random = RANDOM_LOW + (random%(up_num-RANDOM_LOW+1));
+    for (i=0; i<up_num; i++) {   
+        if ((random = get_random_number(RANDOM_LOW, up_num)) == 0) {
+            fprintf(stderr, "Get random number failed\n");
+            exit(1);
+        }
         fd = open(RANDOM_STORE, O_RDWR|O_CREAT|O_APPEND, S_IRUSR|S_IWUSR);
         if (fd == -1) {
             fprintf(stderr, "Fail to open file %s\n", RANDOM_STORE);
@@ -75,10 +109,13 @@ main(int argc, char **argv)
         }
         else {
             sprintf(buf, "%d\n", random);
-            n = sizeof(buf);
+            n = strlen(buf);
             write(fd, buf, n); 
         }
     }
+    close(fd);
+
+    print_random_number(RANDOM_STORE);
 
     return 0;
 }
