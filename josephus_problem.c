@@ -16,10 +16,96 @@
 #define false           0
 #define true            1
 
+/* Another chance to test your understanding about linked list */
+typedef struct node {
+    struct node *next;
+    unsigned int id;
+}NODE;
+
+typedef struct ll {
+    NODE *header;
+    NODE *tail;
+    NODE *current;
+    unsigned int count;
+}LL;
+LL poor_men;
+
+/* create cycle linked list */
+void
+init_josephus(unsigned int n)
+{
+    unsigned int i;
+    for (i=1; i<=n; i++) {
+        NODE *temp=malloc(sizeof(NODE));
+        if(i == n) { /* the last one */
+            temp->next = poor_men.header;
+        }
+        else {
+            temp->next = NULL;
+        }
+        temp->id = i;
+        if (i == 1) {
+            poor_men.header = temp;
+        }
+        else {
+            poor_men.tail->next = temp;
+        }
+        poor_men.tail = poor_men.current = temp;
+    }
+    poor_men.count = n;
+}
+/* print linked list */
+void
+print_josephus(void)
+{
+    NODE *cur = poor_men.header;
+    if (cur == NULL) {
+        fprintf(stderr, "empty list\n");
+        exit(1);
+    }
+    
+    do {
+        printf("[%d]->", cur->id);
+        cur = cur->next;
+        if (cur == NULL) {
+            printf("Not cycle linked list?\n");
+            exit(1);
+        }
+            
+    } while (cur != poor_men.header);
+    printf("[[%d]]", cur->id);
+    printf("\n");
+}
+/* linked list delete */
+void
+execute_the_one(unsigned int m)
+{
+    NODE *previous;
+    NODE *the_one;
+    unsigned int j = 0;
+    do {
+        previous = poor_men.current;
+        poor_men.current = poor_men.current->next;
+        j++;
+    } while(j < m);
+    the_one = previous->next;
+//    free(the_one);
+    previous->next = poor_men.current->next;
+    printf("Execute [%d] ", poor_men.current->id);
+    printf("The remains are:");
+    print_josephus();
+}
+
 unsigned int 
 josephus(unsigned int n, unsigned m)
 {
-
+    unsigned int i;
+    init_josephus(n);
+    print_josephus();
+    for (i=n; i>0; i--) {
+        execute_the_one(m);
+    }
+    return poor_men.current->id;
 }
 
 /* input the n and m from command line, where n>1 */
