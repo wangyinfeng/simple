@@ -102,6 +102,20 @@ execute_the_one(unsigned int m)
     print_josephus();
 }
 
+unsigned int
+josephus_recursion(unsigned int n, unsigned int m)  
+{  
+    unsigned int x;
+    if(n==1)  
+        x=1;  
+    else  
+    {
+        x=(josephus_recursion(n-1,m)+m)%n;
+        if(x==0) x=n;
+    }
+    return x;  
+}  
+
 unsigned int 
 josephus(unsigned int n, unsigned m)
 {
@@ -133,7 +147,8 @@ main(int argc, char **argv)
     }
     printf("[%d] mem stand in cycle, the [%d]th man will be exectued\n", 
          n, m);
-    p = josephus(n, m);
+//    p = josephus(n, m);
+    p = josephus_recursion(n, m);
     printf("stand at position [%d] will survior\n", p);
 
     return 0;
