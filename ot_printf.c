@@ -37,7 +37,9 @@ my_print(const char *fmt, ...)
                     break;
                 case 'd':
                     i = va_arg(argp, int);
-                    putchar(i+'0');
+//                    putchar(i+'0');
+                    snprintf(format, 32, "%d", i);
+                    fputs(format, stdout);
                     n++;
                     break;
                 case 's':
@@ -68,7 +70,7 @@ main(void)
     n = my_print("Test for the print function\n\t"
             "character %c\n\t"
             "integer %d\n\t"
-            "string %s\n\t", 'a', 5, "Hello");
+            "string %s\n\t", 'a', 12345, "Hello");
     /*integer print not correct*/
 
     printf("%d characters have printed\n", n);
