@@ -5,23 +5,27 @@
  * DATE: 2014/11/06
  * Modify:
  * Conclusion: The usage about the varargs
+ * va_list the structure to decode the format string
+ * va_start/va_end begin and stop decode
+ * va_arg get the parameters
 ===================================================================*/
 #include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
-extern char *  itoa ( int value, char * str, int base );
+extern char *  itoa ( int value, char * str, int base );  // not found 
 
 int
 my_print(const char *fmt, ...) 
 {
     int i, n;
     char a;
-    char *p, *s;
+    const char *p;
+    char *s;
     char format[32];
 
     va_list argp;
     va_start(argp, fmt);
-    p = fmt; //warning here
+    p = fmt;
     while(*p != '\0') {
         if (*p == '%') {
             p++;
@@ -33,7 +37,7 @@ my_print(const char *fmt, ...)
                     break;
                 case 'd':
                     i = va_arg(argp, int);
-                    putchar(i);
+                    putchar(i+'0');
                     n++;
                     break;
                 case 's':
