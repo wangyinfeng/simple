@@ -11,6 +11,7 @@
 /* The basic idea I can get is set a arrray which the length is the number of alphabet(26),
  * each element refer the appear number of the specified character, and traver the string,
  * count the number of each element, then sort the array to get which one appear the most.
+ * ---- Not smart idea, can be done within one loop.
  * */
 
 /* include */
@@ -23,7 +24,10 @@
 #define false           0
 #define true            1
 #define IS_ALPHA(A)     ((A)>=65 && (A)<=90) || ((A>=97) && (A)<=122)
-#define INDEX_ALPHA(A)  (A)=(A)>90?(A)-'a':(A)-'A'
+/*Security issue here, this macro changed the value of the A, if use the macro
+ * more than once, the 'A' is not the 'A' any more*/
+//#define INDEX_ALPHA(A)  (A)=(A)>90?(A)-'a':(A)-'A' 
+#define INDEX_ALPHA(A)  (A)>90?(A)-'a':(A)-'A'
 #define COUNT_NUMBER    27
 #define OTHER_ITEM      COUNT_NUMBER-1
 
@@ -52,6 +56,7 @@ count(char list[])
     return 0;
 }
 
+/*Two loops to find the largest item in array, inefficient*/
 int
 compare(int times[], char *alpha)
 {
@@ -80,13 +85,41 @@ compare(int times[], char *alpha)
     return 0;
 }
 
+
+/*Much clear here
+ * Traver the string and record the target at the sametime, one loop
+ * will finish everything. */
+int
+return_the_max(char list[], char *alpha)
+{
+    *alpha =' ';
+    unsigned char a;
+    int max = 0;
+    unsigned int i;
+
+    for (i=0; list[i] != '\0'; i++) {
+        if (IS_ALPHA(list[i])) {
+            a = list[i];
+            if (++show_times[INDEX_ALPHA(a)] > max) {
+                max = show_times[INDEX_ALPHA(a)];
+                *alpha = list[i];
+            }
+        }
+    }
+    return max;
+}
+
+
 int
 main(int argc, char **argv)
 {
     int times = 0;
     char alpha = 0;
+#ifdef APPROACH_A
     count(list);
     times = compare(show_times, &alpha);
+#endif
+    times = return_the_max(list, &alpha);
     if (IS_ALPHA(alpha))
         printf("The alpha '%c' appreas the most times(%d)\n", alpha, times);
     else
